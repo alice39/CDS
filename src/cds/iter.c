@@ -103,7 +103,7 @@ bool cds_iter_hasback(cds_iter iter) {
         return false;
     }
 
-    return iter->has_back(iter, &iter->data);
+    return iter->has_back(iter->structure, &iter->data);
 }
 
 void* cds_iter_back(cds_iter iter) {
@@ -111,6 +111,6 @@ void* cds_iter_back(cds_iter iter) {
         return NULL;
     }
 
-    return iter->back(iter, &iter->data);
+    return iter->back(iter->structure, &iter->data);
 }
 
