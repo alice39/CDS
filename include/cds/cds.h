@@ -3,6 +3,8 @@
 
 #include <stddef.h>
 
+#define CDS_OBJ(type) void*
+
 #define CDS_OK 0
 #define CDS_ERR 1
 
