@@ -76,6 +76,19 @@ cds_vector cds_vector_create(struct cds_vector_config config);
  */
 cds_vector cds_vector_copy(cds_vector vector, cds_callocator callocator, cds_destroyer destroyer);
 /**
+ * Create a new vector from another vector in a given range.
+ * 
+ * If begin is not valid, then it'll vector begin will be used and likewise to
+ * end, if both are not valid, it'll be similar to use cds_vector_copy function.
+ *
+ * @param vector to slice on
+ * @param begin where slice begins
+ * @param end where slice ends
+ * @since 1.0
+ * @return new vector or NULL if could not be created
+ */
+cds_vector cds_vector_from(cds_vector vector, cds_iter begin, cds_iter end);
+/**
  * Destroy a vector.
  * 
  * After this operation, vector should not be used anymore until be created

@@ -94,6 +94,35 @@ cds_vector cds_vector_copy(cds_vector vector, cds_callocator callocator, cds_des
     return other;
 }
 
+cds_vector cds_vector_from(cds_vector vector, cds_iter begin, cds_iter end) {
+    if (vector == NULL) {
+        return NULL;
+    }
+
+    if (!cds_iter_valid(begin)) {
+        begin = cds_vector_begin(vector);
+    }
+    if (!cds_iter_valid(end)) {
+        end = cds_vector_end(vector);
+    }
+
+    struct cds_vector_config config = {
+        .type = vector->type,
+        .capacity = vector->size,
+        .callocator = vector->callocator,
+        .destroyer = vector->destroyer
+    };
+    cds_vector other = cds_vector_create(config);
+
+    if (other != NULL) {
+        while (cds_iter_hasnext(begin) && !cds_iter_similar(begin, end)) {
+            cds_vector_pushback(other, cds_iter_next(begin));
+        }
+    }
+
+    return other;
+}
+
 void cds_vector_destroy(cds_vector vector) {
     if (vector == NULL) {
         return;
