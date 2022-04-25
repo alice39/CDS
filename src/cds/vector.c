@@ -28,6 +28,8 @@ static bool _cds_iter_hasnext(void* structure, void** data);
 static void* _cds_iter_next(void* structure, void** data);
 static bool _cds_iter_hasback(void* structure, void** data);
 static void* _cds_iter_back(void* structure, void** data);
+static bool _cds_iter_similar(void* data, void* other);
+static size_t _cds_iter_distance(void* data, void* other);
 static bool _cds_iter_valid(void* structure, void* data);
 static void _cds_iter_destroy(void* data);
 
@@ -373,6 +375,8 @@ static cds_iter _cds_iter_create(cds_vector vector, struct cds_vector_iterdata d
         .next = reverse ? _cds_iter_back : _cds_iter_next,
         .has_back = reverse ? _cds_iter_hasnext : _cds_iter_hasback,
         .back = reverse ? _cds_iter_next : _cds_iter_back,
+        .is_similar = _cds_iter_similar,
+        .distance = _cds_iter_distance,
         .is_valid = _cds_iter_valid,
         .destroy = _cds_iter_destroy
     };
@@ -438,6 +442,28 @@ static void* _cds_iter_back(void* structure, void** data) {
     }
 
     return &vector->data[vector->type * --iterdata->pos];
+}
+
+static bool _cds_iter_similar(void* data, void* other) {
+    if (data == NULL || other == NULL) {
+        return false;
+    }
+
+    struct cds_vector_iterdata* iterdata = data;
+    struct cds_vector_iterdata* iterother = other;
+
+    return iterdata->pos == iterother->pos;
+}
+
+static size_t _cds_iter_distance(void* data, void* other) {
+    if (data == NULL || other == NULL) {
+        return 0;
+    }
+
+    struct cds_vector_iterdata* iterdata = data;
+    struct cds_vector_iterdata* iterother = other;
+
+    return iterdata->pos > iterother->pos ? iterdata->pos - iterother->pos : iterother->pos - iterdata->pos;
 }
 
 static bool _cds_iter_valid(void* structure, void* data) {
