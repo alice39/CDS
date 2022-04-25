@@ -19,12 +19,12 @@ struct cds_iter_i {
     void (*destroy)(void* data);
 };
 
-cds_iter cds_iter_create(void* structure, struct cds_iter_config config) {
+CDS_ITER(T) cds_iter_create(void* structure, struct cds_iter_config config) {
     if (structure == NULL) {
         return NULL;
     }
 
-    cds_iter iter = malloc(sizeof(struct cds_iter_i));
+    CDS_ITER(T) iter = malloc(sizeof(struct cds_iter_i));
     
     if (iter != NULL) {
         iter->structure = structure;
@@ -46,7 +46,7 @@ cds_iter cds_iter_create(void* structure, struct cds_iter_config config) {
     return iter;
 }
 
-bool cds_iter_valid(cds_iter iter) {
+bool cds_iter_valid(CDS_ITER(T) iter) {
     if (iter == NULL | iter->is_valid == NULL) {
         return false;
     }
@@ -54,7 +54,7 @@ bool cds_iter_valid(cds_iter iter) {
     return iter->is_valid(iter->structure, iter->data);
 }
 
-void cds_iter_destroy(cds_iter iter) {
+void cds_iter_destroy(CDS_ITER(T) iter) {
     if (iter == NULL) {
         return;
     }
@@ -66,7 +66,7 @@ void cds_iter_destroy(cds_iter iter) {
     free(iter);
 }
 
-bool cds_iter_similar(cds_iter first, cds_iter second) {
+bool cds_iter_similar(CDS_ITER(T) first, CDS_ITER(T) second) {
     if (first == NULL || first->is_similar == NULL || second == NULL) {
         return false;
     }
@@ -74,7 +74,7 @@ bool cds_iter_similar(cds_iter first, cds_iter second) {
     return first->is_similar(first->data, second->data) ? true : false;
 }
 
-size_t cds_iter_distance(cds_iter first, cds_iter second) {
+size_t cds_iter_distance(CDS_ITER(T) first, CDS_ITER(T) second) {
     if (first == NULL || first->distance == NULL || second == NULL) {
         return 0;
     }
@@ -82,7 +82,7 @@ size_t cds_iter_distance(cds_iter first, cds_iter second) {
     return first->distance(first->data, second->data);
 }
 
-bool cds_iter_hasnext(cds_iter iter) {
+bool cds_iter_hasnext(CDS_ITER(T) iter) {
     if (iter == NULL || iter->has_next == NULL) {
         return false;
     }
@@ -90,7 +90,7 @@ bool cds_iter_hasnext(cds_iter iter) {
     return iter->has_next(iter->structure, &iter->data) ? true : false;
 }
 
-void* cds_iter_next(cds_iter iter) {
+CDS_OBJ(T) cds_iter_next(CDS_ITER(T) iter) {
     if (iter == NULL || iter->next == NULL) {
         return NULL;
     }
@@ -98,7 +98,7 @@ void* cds_iter_next(cds_iter iter) {
     return iter->next(iter->structure, &iter->data);
 }
 
-bool cds_iter_hasback(cds_iter iter) {
+bool cds_iter_hasback(CDS_ITER(T) iter) {
     if (iter == NULL || iter->has_back == NULL) {
         return false;
     }
@@ -106,7 +106,7 @@ bool cds_iter_hasback(cds_iter iter) {
     return iter->has_back(iter->structure, &iter->data);
 }
 
-void* cds_iter_back(cds_iter iter) {
+CDS_OBJ(T) cds_iter_back(CDS_ITER(T) iter) {
     if (iter == NULL || iter->back == NULL) {
         return NULL;
     }
