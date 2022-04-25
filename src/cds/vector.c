@@ -20,10 +20,10 @@ struct cds_vector_iterdata {
     size_t mod;
 };
 
-static int _cds_reserve(cds_vector vector);
-static int _cds_shrink(cds_vector vector);
+static int _cds_reserve(CDS_VECTOR(T) vector);
+static int _cds_shrink(CDS_VECTOR(T) vector);
 
-static cds_iter _cds_iter_create(cds_vector vector, struct cds_vector_iterdata data, bool reverse);
+static CDS_ITER(T) _cds_iter_create(CDS_VECTOR(T) vector, struct cds_vector_iterdata data, bool reverse);
 static bool _cds_iter_hasnext(void* structure, void** data);
 static void* _cds_iter_next(void* structure, void** data);
 static bool _cds_iter_hasback(void* structure, void** data);
@@ -33,8 +33,8 @@ static size_t _cds_iter_distance(void* data, void* other);
 static bool _cds_iter_valid(void* structure, void* data);
 static void _cds_iter_destroy(void* data);
 
-cds_vector cds_vector_create(struct cds_vector_config config) {
-    cds_vector vector = malloc(sizeof(struct cds_vector_i));
+CDS_VECTOR(T) cds_vector_create(struct cds_vector_config config) {
+    CDS_VECTOR(T) vector = malloc(sizeof(struct cds_vector_i));
 
     if (config.callocator == NULL) {
         config.callocator = cds_simple_callocator;
@@ -64,7 +64,7 @@ cds_vector cds_vector_create(struct cds_vector_config config) {
     return vector;
 }
 
-cds_vector cds_vector_copy(cds_vector vector, cds_callocator callocator, cds_destroyer destroyer) {
+CDS_VECTOR(T) cds_vector_copy(CDS_VECTOR(T) vector, cds_callocator callocator, cds_destroyer destroyer) {
     // nothing to copy
     if (vector == NULL) {
         return NULL;
@@ -76,7 +76,7 @@ cds_vector cds_vector_copy(cds_vector vector, cds_callocator callocator, cds_des
         .callocator = callocator,
         .destroyer = destroyer
     };
-    cds_vector other = cds_vector_create(config);
+    CDS_VECTOR(T) other = cds_vector_create(config);
 
     if (other != NULL) {
         for (size_t i = 0; i < vector->size; i++) {
@@ -94,7 +94,7 @@ cds_vector cds_vector_copy(cds_vector vector, cds_callocator callocator, cds_des
     return other;
 }
 
-cds_vector cds_vector_from(cds_vector vector, cds_iter begin, cds_iter end) {
+CDS_VECTOR(T) cds_vector_from(CDS_VECTOR(T) vector, CDS_ITER(T) begin, CDS_ITER(T) end) {
     if (vector == NULL) {
         return NULL;
     }
@@ -112,7 +112,7 @@ cds_vector cds_vector_from(cds_vector vector, cds_iter begin, cds_iter end) {
         .callocator = vector->callocator,
         .destroyer = vector->destroyer
     };
-    cds_vector other = cds_vector_create(config);
+    CDS_VECTOR(T) other = cds_vector_create(config);
 
     if (other != NULL) {
         while (cds_iter_hasnext(begin) && !cds_iter_similar(begin, end)) {
@@ -123,7 +123,7 @@ cds_vector cds_vector_from(cds_vector vector, cds_iter begin, cds_iter end) {
     return other;
 }
 
-void cds_vector_destroy(cds_vector vector) {
+void cds_vector_destroy(CDS_VECTOR(T) vector) {
     if (vector == NULL) {
         return;
     }
@@ -133,7 +133,7 @@ void cds_vector_destroy(cds_vector vector) {
     free(vector);
 }
 
-int cds_vector_at(cds_vector vector, size_t pos, void* out) {
+int cds_vector_at(CDS_VECTOR(T) vector, size_t pos, void* out) {
     if (vector == NULL || pos >= vector->size) {
         return CDS_ERR;
     }
@@ -142,15 +142,15 @@ int cds_vector_at(cds_vector vector, size_t pos, void* out) {
     return CDS_OK;
 }
 
-int cds_vector_front(cds_vector vector, void* out) {
+int cds_vector_front(CDS_VECTOR(T) vector, void* out) {
     return cds_vector_at(vector, 0, out);
 }
 
-int cds_vector_back(cds_vector vector, void* out) {
+int cds_vector_back(CDS_VECTOR(T) vector, void* out) {
     return cds_vector_at(vector, vector->size - 1, out);
 }
 
-cds_iter cds_vector_begin(cds_vector vector) {
+CDS_ITER(T) cds_vector_begin(CDS_VECTOR(T) vector) {
     if (vector == NULL) {
         return NULL;
     }
@@ -159,7 +159,7 @@ cds_iter cds_vector_begin(cds_vector vector) {
     return _cds_iter_create(vector, data, false);
 }
 
-cds_iter cds_vector_rbegin(cds_vector vector) {
+CDS_ITER(T) cds_vector_rbegin(CDS_VECTOR(T) vector) {
     if (vector == NULL) {
         return NULL;
     }
@@ -168,7 +168,7 @@ cds_iter cds_vector_rbegin(cds_vector vector) {
     return _cds_iter_create(vector, data, true);
 }
 
-cds_iter cds_vector_end(cds_vector vector) {
+CDS_ITER(T) cds_vector_end(CDS_VECTOR(T) vector) {
     if (vector == NULL) {
         return NULL;
     }
@@ -177,7 +177,7 @@ cds_iter cds_vector_end(cds_vector vector) {
     return _cds_iter_create(vector, data, false);
 }
 
-cds_iter cds_vector_rend(cds_vector vector) {
+CDS_ITER(T) cds_vector_rend(CDS_VECTOR(T) vector) {
     if (vector == NULL) {
         return NULL;
     }
@@ -186,15 +186,15 @@ cds_iter cds_vector_rend(cds_vector vector) {
     return _cds_iter_create(vector, data, true);
 }
 
-bool cds_vector_empty(cds_vector vector) {
+bool cds_vector_empty(CDS_VECTOR(T) vector) {
     return vector != NULL && vector->size == 0 ? true : false;
 }
 
-size_t cds_vector_size(cds_vector vector) {
+size_t cds_vector_size(CDS_VECTOR(T) vector) {
     return vector != NULL ? vector->size : 0;
 }
 
-int cds_vector_reserve(cds_vector vector, size_t capacity) {
+int cds_vector_reserve(CDS_VECTOR(T) vector, size_t capacity) {
     if (vector == NULL) {
         return CDS_ERR;
     }
@@ -215,11 +215,11 @@ int cds_vector_reserve(cds_vector vector, size_t capacity) {
     return CDS_OK;
 }
 
-size_t cds_vector_capacity(cds_vector vector) {
+size_t cds_vector_capacity(CDS_VECTOR(T) vector) {
     return vector != NULL ? vector->reserved : 0;
 }
 
-void cds_vector_shrink(cds_vector vector) {
+void cds_vector_shrink(CDS_VECTOR(T) vector) {
     if (vector == NULL || vector->size >= vector->reserved) {
         return;
     }
@@ -234,7 +234,7 @@ void cds_vector_shrink(cds_vector vector) {
     vector->data = new_data;
 }
 
-void cds_vector_clear(cds_vector vector) {
+void cds_vector_clear(CDS_VECTOR(T) vector) {
     if (vector == NULL) {
         return;
     }
@@ -247,7 +247,7 @@ void cds_vector_clear(cds_vector vector) {
     vector->mod++;
 }
 
-int cds_vector_insert(cds_vector vector, size_t pos, void* data) {
+int cds_vector_insert(CDS_VECTOR(T) vector, size_t pos, void* data) {
     if (vector == NULL || pos >= vector->size) {
         return CDS_ERR;
     }
@@ -268,7 +268,7 @@ int cds_vector_insert(cds_vector vector, size_t pos, void* data) {
     return CDS_OK;
 }
 
-int cds_vector_erase(cds_vector vector, size_t pos) {
+int cds_vector_erase(CDS_VECTOR(T) vector, size_t pos) {
     if (vector == NULL || pos >= vector->size) {
         return CDS_ERR;
     }
@@ -287,7 +287,7 @@ int cds_vector_erase(cds_vector vector, size_t pos) {
     return CDS_OK;
 }
 
-int cds_vector_pushback(cds_vector vector, void* data) {
+int cds_vector_pushback(CDS_VECTOR(T) vector, void* data) {
     if (vector == NULL) {
         return CDS_ERR;
     }
@@ -306,7 +306,7 @@ int cds_vector_pushback(cds_vector vector, void* data) {
     return CDS_OK;
 }
 
-int cds_vector_popback(cds_vector vector, void* out) {
+int cds_vector_popback(CDS_VECTOR(T) vector, void* out) {
     if (vector == NULL || vector->size == 0) {
         return CDS_ERR;
     }
@@ -320,7 +320,7 @@ int cds_vector_popback(cds_vector vector, void* out) {
     return CDS_OK;
 }
 
-int cds_vector_resize(cds_vector vector, size_t count, void* initializer) {
+int cds_vector_resize(CDS_VECTOR(T) vector, size_t count, void* initializer) {
     if (vector == NULL) {
         return CDS_ERR;
     }
@@ -342,7 +342,7 @@ int cds_vector_resize(cds_vector vector, size_t count, void* initializer) {
     return CDS_OK;
 }
 
-int cds_vector_swap(cds_vector vector, cds_vector other) {
+int cds_vector_swap(CDS_VECTOR(T) vector, CDS_VECTOR(T) other) {
     if (vector == NULL || other == NULL) {
         return CDS_ERR;
     }
@@ -357,7 +357,7 @@ int cds_vector_swap(cds_vector vector, cds_vector other) {
     return CDS_OK;
 }
 
-static int _cds_reserve(cds_vector vector) {
+static int _cds_reserve(CDS_VECTOR(T) vector) {
     size_t size = vector->size;
     if (vector->reserved > size) {
         return CDS_OK;
@@ -367,7 +367,7 @@ static int _cds_reserve(cds_vector vector) {
     return size > 0 ? reserver(vector, size * 2) : reserver(vector, 8);
 }
 
-static int _cds_shrink(cds_vector vector) {
+static int _cds_shrink(CDS_VECTOR(T) vector) {
     if (vector->size == 0) {
         return CDS_OK;
     }
@@ -388,7 +388,7 @@ static int _cds_shrink(cds_vector vector) {
     return CDS_OK;
 }
 
-static cds_iter _cds_iter_create(cds_vector vector, struct cds_vector_iterdata data, bool reverse) {
+static CDS_ITER(T) _cds_iter_create(CDS_VECTOR(T) vector, struct cds_vector_iterdata data, bool reverse) {
     struct cds_vector_iterdata* iterdata = malloc(sizeof(struct cds_vector_iterdata));
 
     if (iterdata == NULL) {
@@ -418,7 +418,7 @@ static bool _cds_iter_hasnext(void* structure, void** data) {
         return false;
     }
 
-    cds_vector vector = structure;
+    CDS_VECTOR(T) vector = structure;
     struct cds_vector_iterdata* iterdata = *data;
 
     if (iterdata == NULL || vector->mod != iterdata->mod) {
@@ -433,7 +433,7 @@ static void* _cds_iter_next(void* structure, void** data) {
         return NULL;
     }
 
-    cds_vector vector = structure;
+    CDS_VECTOR(T) vector = structure;
     struct cds_vector_iterdata* iterdata = *data;
 
     if (iterdata == NULL || vector->mod != iterdata->mod || iterdata->pos >= vector->size) {
@@ -448,7 +448,7 @@ static bool _cds_iter_hasback(void* structure, void** data) {
         return false;
     }
 
-    cds_vector vector = structure;
+    CDS_VECTOR(T) vector = structure;
     struct cds_vector_iterdata* iterdata = *data;
 
     if (iterdata == NULL || vector->mod != iterdata->mod) {
@@ -463,7 +463,7 @@ static void* _cds_iter_back(void* structure, void** data) {
         return NULL;
     }
 
-    cds_vector vector = structure;
+    CDS_VECTOR(T) vector = structure;
     struct cds_vector_iterdata* iterdata = *data;
 
     if (iterdata == NULL || vector->mod != iterdata->mod || iterdata->pos == 0) {
@@ -500,7 +500,7 @@ static bool _cds_iter_valid(void* structure, void* data) {
         return false;
     }
 
-    cds_vector vector = structure;
+    CDS_VECTOR(T) vector = structure;
     struct cds_vector_iterdata* iterdata = data;
 
     return vector->mod == iterdata->mod;

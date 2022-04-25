@@ -64,7 +64,7 @@ struct cds_vector_config {
  * @since 1.0
  * @return new vector or NULL if could not be created
  */
-cds_vector cds_vector_create(struct cds_vector_config config);
+CDS_VECTOR(T) cds_vector_create(struct cds_vector_config config);
 /**
  * Create a new vector from an axisting vector.
  *
@@ -74,7 +74,7 @@ cds_vector cds_vector_create(struct cds_vector_config config);
  * @since 1.0
  * @return new vector or NULL if could not be created
  */
-cds_vector cds_vector_copy(cds_vector vector, cds_callocator callocator, cds_destroyer destroyer);
+CDS_VECTOR(T) cds_vector_copy(CDS_VECTOR(T) vector, cds_callocator callocator, cds_destroyer destroyer);
 /**
  * Create a new vector from another vector in a given range.
  * 
@@ -87,7 +87,7 @@ cds_vector cds_vector_copy(cds_vector vector, cds_callocator callocator, cds_des
  * @since 1.0
  * @return new vector or NULL if could not be created
  */
-cds_vector cds_vector_from(cds_vector vector, cds_iter begin, cds_iter end);
+CDS_VECTOR(T) cds_vector_from(CDS_VECTOR(T) vector, CDS_ITER(T) begin, CDS_ITER(T) end);
 /**
  * Destroy a vector.
  * 
@@ -97,7 +97,7 @@ cds_vector cds_vector_from(cds_vector vector, cds_iter begin, cds_iter end);
  * @param vector to be freed/destroyed
  * @since 1.0
  */
-void cds_vector_destroy(cds_vector vector);
+void cds_vector_destroy(CDS_VECTOR(T) vector);
 
 // Element Access
 /**
@@ -115,7 +115,7 @@ void cds_vector_destroy(cds_vector vector);
  * @since 1.0
  * @return CDS_OK if it was success otherwise CDS_ERR
  */
-int cds_vector_at(cds_vector vector, size_t pos, void* out);
+int cds_vector_at(CDS_VECTOR(T) vector, size_t pos, CDS_OBJ(T) out);
 /**
  * Copy front/first element from vector.
  *
@@ -130,7 +130,7 @@ int cds_vector_at(cds_vector vector, size_t pos, void* out);
  * @since 1.0
  * @return CDS_OK if it was success otherwise CDS_ERR
  */
-int cds_vector_front(cds_vector vector, void* out);
+int cds_vector_front(CDS_VECTOR(T) vector, CDS_OBJ(T) out);
 /**
  * Copy back/last element from vector.
  *
@@ -145,7 +145,7 @@ int cds_vector_front(cds_vector vector, void* out);
  * @since 1.0
  * @return CDS_OK if it was success otherwise CDS_ERR
  */
-int cds_vector_back(cds_vector vector, void* out);
+int cds_vector_back(CDS_VECTOR(T) vector, CDS_OBJ(T) out);
 
 // iterators
 /**
@@ -155,7 +155,7 @@ int cds_vector_back(cds_vector vector, void* out);
  * @since 1.0
  * @return iterator or NULL if could not be created
  */
-cds_iter cds_vector_begin(cds_vector vector);
+CDS_ITER(T) cds_vector_begin(CDS_VECTOR(T) vector);
 /**
  * Create a new iterator for this vector from beginning in reverse mode.
  *
@@ -163,7 +163,7 @@ cds_iter cds_vector_begin(cds_vector vector);
  * @since 1.0
  * @return iterator or NULL if could not be created
  */
-cds_iter cds_vector_rbegin(cds_vector vector);
+CDS_ITER(T) cds_vector_rbegin(CDS_VECTOR(T) vector);
 /**
  * Create a new iterator for this vector from ending.
  *
@@ -171,7 +171,7 @@ cds_iter cds_vector_rbegin(cds_vector vector);
  * @since 1.0
  * @return iterator or NULL if could not be created
  */
-cds_iter cds_vector_end(cds_vector vector);
+CDS_ITER(T) cds_vector_end(CDS_VECTOR(T) vector);
 /**
  * Create a new iterator for this vector from ending in reverse mode.
  *
@@ -179,7 +179,7 @@ cds_iter cds_vector_end(cds_vector vector);
  * @since 1.0
  * @return iterator or NULL if could not be created
  */
-cds_iter cds_vector_rend(cds_vector vector);
+CDS_ITER(T) cds_vector_rend(CDS_VECTOR(T) vector);
 
 // Capacity Operators
 /**
@@ -189,7 +189,7 @@ cds_iter cds_vector_rend(cds_vector vector);
  * @since 1.0
  * @return true if empty otherwise false
  */
-bool cds_vector_empty(cds_vector vector);
+bool cds_vector_empty(CDS_VECTOR(T) vector);
 /**
  * Check vector used size.
  *
@@ -197,7 +197,7 @@ bool cds_vector_empty(cds_vector vector);
  * @since 1.0
  * @return size of vector
  */
-size_t cds_vector_size(cds_vector vector);
+size_t cds_vector_size(CDS_VECTOR(T) vector);
 /**
  * Reserve given capacity in vector.
  *
@@ -209,7 +209,7 @@ size_t cds_vector_size(cds_vector vector);
  * @since 1.0
  * @return CDS_OK if it could reverse said capacity otherwise CDS_ERR
  */
-int cds_vector_reserve(cds_vector vector, size_t capacity);
+int cds_vector_reserve(CDS_VECTOR(T) vector, size_t capacity);
 /**
  * Check vector reserved size.
  *
@@ -217,7 +217,7 @@ int cds_vector_reserve(cds_vector vector, size_t capacity);
  * @since 1.0
  * @return reserved capacity in vector
  */
-size_t cds_vector_capacity(cds_vector vector);
+size_t cds_vector_capacity(CDS_VECTOR(T) vector);
 /**
  * Shrink vector to fit.
  *
@@ -226,7 +226,7 @@ size_t cds_vector_capacity(cds_vector vector);
  * @param vector to be shrinked
  * @since 1.0
  */
-void cds_vector_shrink(cds_vector vector);
+void cds_vector_shrink(CDS_VECTOR(T) vector);
 
 // Modifify Operators
 /**
@@ -235,7 +235,7 @@ void cds_vector_shrink(cds_vector vector);
  * @param vector to clear
  * @since 1.0
  */
-void cds_vector_clear(cds_vector vector);
+void cds_vector_clear(CDS_VECTOR(T) vector);
 /**
  * Insert a foward element in given position.
  *
@@ -248,7 +248,7 @@ void cds_vector_clear(cds_vector vector);
  * @since 1.0
  * @return CDS_OK if it could insert it otherwise CDS_ERR
  */
-int cds_vector_insert(cds_vector vector, size_t pos, void* data);
+int cds_vector_insert(CDS_VECTOR(T) vector, size_t pos, CDS_OBJ(T) data);
 /**
  * Erase an element in given position.
  *
@@ -259,7 +259,7 @@ int cds_vector_insert(cds_vector vector, size_t pos, void* data);
  * @since 1.0
  * @return CDS_OK if it could erase it otherwise CDS_ERR
  */
-int cds_vector_erase(cds_vector vector, size_t pos);
+int cds_vector_erase(CDS_VECTOR(T) vector, size_t pos);
 /**
  * Push back an element to vector.
  *
@@ -273,7 +273,7 @@ int cds_vector_erase(cds_vector vector, size_t pos);
  * @since 1.0
  * @return CDS_OK if it could be pushed back otherwise CDS_ERR
  */
-int cds_vector_pushback(cds_vector vector, void* data);
+int cds_vector_pushback(CDS_VECTOR(T) vector, CDS_OBJ(T) data);
 /**
  * Pop back an element from vector.
  *
@@ -284,7 +284,7 @@ int cds_vector_pushback(cds_vector vector, void* data);
  * @since 1.0
  * @return CDS_OK if it could pop element otherwise CDS_ERR
  */
-int cds_vector_popback(cds_vector vector, void* out);
+int cds_vector_popback(CDS_VECTOR(T) vector, CDS_OBJ(T) out);
 /**
  * Resize used size in vector.
  *
@@ -297,7 +297,7 @@ int cds_vector_popback(cds_vector vector, void* out);
  * @since 1.0
  * @return CDS_OK if it could be resized otherwise CDS_ERR
  */
-int cds_vector_resize(cds_vector vector, size_t count, void* initializer);
+int cds_vector_resize(CDS_VECTOR(T) vector, size_t count, CDS_OBJ(T) initializer);
 /**
  * Swap two vector's elements to each other.
  *
@@ -308,6 +308,6 @@ int cds_vector_resize(cds_vector vector, size_t count, void* initializer);
  * @since 1.0
  * @return CDS_OK if it could swap elements otherwise CDS_ERR
  */
-int cds_vector_swap(cds_vector vector, cds_vector other);
+int cds_vector_swap(CDS_VECTOR(T) vector, CDS_VECTOR(T) other);
 
 #endif // CDS_VECTOR_GUARD_HEADER
