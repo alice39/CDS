@@ -347,16 +347,13 @@ static int _cds_reserve(CDS_VECTOR(T) vector) {
 }
 
 static int _cds_shrink(CDS_VECTOR(T) vector) {
-    if (vector->size == 0) {
-        return CDS_OK;
-    }
-    if (vector->reserved / vector->size < 4) {
+    if (vector->size != 0 && vector->reserved / vector->size < 4) {
         return CDS_OK;
     }
 
     cds_reallocator reallocator = vector->memory.reallocator;
 
-    size_t new_reserved = vector->reserved / 2;
+    size_t new_reserved = vector->size != 0 ? vector->reserved / 2 : 0;
     uint8_t* new_data = reallocator(vector->data, sizeof(uint8_t) * vector->type * new_reserved);
 
     if (new_data == NULL) {
