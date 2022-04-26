@@ -5,8 +5,7 @@
 #include <cds/vector.h>
 
 int main() {
-    struct cds_vector_config config = {.type = sizeof(int)};
-    CDS_VECTOR(int) vector = cds_vector_create(config);
+    CDS_VECTOR(int) vector = CDS_VECTOR_NEW(int);
 
     for (int i = 0; i < 4; i++) {
         cds_vector_pushback(vector, &i);

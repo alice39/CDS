@@ -10,8 +10,7 @@ struct cds_vector_i {
 
     size_t mod;
 
-    cds_callocator callocator;
-    cds_destroyer destroyer;
+    struct cds_memory memory;
     uint8_t* data;
 };
 
@@ -34,14 +33,13 @@ static bool _cds_iter_valid(void* structure, void* data);
 static void _cds_iter_destroy(void* data);
 
 CDS_VECTOR(T) cds_vector_create(struct cds_vector_config config) {
-    CDS_VECTOR(T) vector = malloc(sizeof(struct cds_vector_i));
+    if (!cds_memory_valid(config.memory)) {
+        return NULL;
+    }
 
-    if (config.callocator == NULL) {
-        config.callocator = cds_simple_callocator;
-    }
-    if (config.destroyer == NULL) {
-        config.destroyer = cds_simple_destroyer;
-    }
+    struct cds_memory* memory = &config.memory;
+
+    CDS_VECTOR(T) vector = memory->allocator(sizeof(struct cds_vector_i));
 
     if (vector != NULL) {
         vector->size = 0;
@@ -50,13 +48,12 @@ CDS_VECTOR(T) cds_vector_create(struct cds_vector_config config) {
 
         vector->mod = 0;
 
-        vector->callocator = config.callocator;
-        vector->destroyer = config.destroyer;
-        vector->data = malloc(sizeof(uint8_t) * config.type * config.capacity);
+        vector->memory = *memory;
+        vector->data = memory->allocator(sizeof(uint8_t) * config.type * config.capacity);
 
         // no enough memory to create data
         if (vector->data == NULL) {
-            free(vector);
+            memory->deallocator(vector);
             vector = NULL;
         }
     }
@@ -64,7 +61,7 @@ CDS_VECTOR(T) cds_vector_create(struct cds_vector_config config) {
     return vector;
 }
 
-CDS_VECTOR(T) cds_vector_copy(CDS_VECTOR(T) vector, cds_callocator callocator, cds_destroyer destroyer) {
+CDS_VECTOR(T) cds_vector_copy(CDS_VECTOR(T) vector, struct cds_memory memory) {
     // nothing to copy
     if (vector == NULL) {
         return NULL;
@@ -73,22 +70,12 @@ CDS_VECTOR(T) cds_vector_copy(CDS_VECTOR(T) vector, cds_callocator callocator, c
     struct cds_vector_config config = {
         .type = vector->type,
         .capacity = vector->reserved,
-        .callocator = callocator,
-        .destroyer = destroyer
+        .memory = memory
     };
     CDS_VECTOR(T) other = cds_vector_create(config);
 
     if (other != NULL) {
-        for (size_t i = 0; i < vector->size; i++) {
-            size_t data_index = i * vector->type;
-
-            void* element = other->callocator(&vector->data[data_index], vector->type);
-            memcpy(&other->data[data_index], element, vector->type);
-
-            // destroyer should not called
-            // because element was copied into data
-            free(element);
-        }
+        memcpy(other->data, vector->data, vector->type * vector->size);
     }
 
     return other;
@@ -109,8 +96,7 @@ CDS_VECTOR(T) cds_vector_from(CDS_VECTOR(T) vector, CDS_ITER(T) begin, CDS_ITER(
     struct cds_vector_config config = {
         .type = vector->type,
         .capacity = vector->size,
-        .callocator = vector->callocator,
-        .destroyer = vector->destroyer
+        .memory = vector->memory
     };
     CDS_VECTOR(T) other = cds_vector_create(config);
 
@@ -239,10 +225,6 @@ void cds_vector_clear(CDS_VECTOR(T) vector) {
         return;
     }
 
-    for (size_t i = 0; i < vector->size; i++) {
-        vector->destroyer(&vector->data[vector->type * i]);
-    }
-
     vector->size = 0;
     vector->mod++;
 }
@@ -257,10 +239,7 @@ int cds_vector_insert(CDS_VECTOR(T) vector, size_t pos, void* data) {
     }
 
     memmove(&vector->data[vector->type * (pos + 1)], &vector->data[vector->type * pos], vector->type * (vector->size - pos));
-
-    void* element = vector->callocator(data, vector->type);
-    memcpy(&vector->data[vector->type * pos], element, vector->type);
-    free(element);
+    memcpy(&vector->data[vector->type * pos], data, vector->type);
 
     vector->size++;
     vector->mod++;
@@ -275,8 +254,6 @@ int cds_vector_erase(CDS_VECTOR(T) vector, size_t pos) {
 
     vector->size--;
     vector->mod++;
-
-    vector->destroyer(&vector->data[vector->type * pos]);
 
     if (vector->size > pos) {
         memmove(&vector->data[vector->type * pos], &vector->data[vector->type * (pos + 1)], vector->type * (vector->size - pos));
@@ -296,9 +273,7 @@ int cds_vector_pushback(CDS_VECTOR(T) vector, void* data) {
         return CDS_ERR;
     }
 
-    void* element = vector->callocator(data, vector->type);
-    memcpy(&vector->data[vector->type * vector->size], element, vector->type);
-    free(element);
+    memcpy(&vector->data[vector->type * vector->size], data, vector->type);
 
     vector->size++;
     vector->mod++;

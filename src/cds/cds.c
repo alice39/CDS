@@ -1,24 +1,26 @@
 #include <stdlib.h>
-#include <string.h>
 
 #include <cds/cds.h>
 
-void* cds_simple_callocator(void* src, size_t bytes) {
-    void* data = malloc(bytes);
-    memcpy(data, src, bytes);
-    return data;
+struct cds_memory cds_memory_system() {
+    return (struct cds_memory) {
+        .allocator = malloc,
+        .reallocator = realloc,
+        .deallocator = free
+    };
 }
 
-void cds_simple_destroyer(void* src) {
-    
-}
+bool cds_memory_valid(struct cds_memory memory) {
+    if (memory.allocator == NULL) {
+        return false;
+    }
+    if (memory.reallocator == NULL) {
+        return false;
+    }
+    if (memory.deallocator == NULL) {
+        return false;
+    }
 
-void* cds_string_callocator(void* src, size_t bytes) {
-    return strdup((char*) src);
-}
-
-
-void cds_string_destroyer(void* src) {
-    free(*(char**) src);
+    return true;
 }
 

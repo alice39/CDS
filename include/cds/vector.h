@@ -25,7 +25,7 @@
  * @param ... optional parameters in struct cds_vector_config
  * @since 1.0
  */
-#define CDS_VECTOR_NEW(dtype, ...) cds_vector_create((struct cds_vector_config){.type = sizeof(dtype), .capacity = 8, __VA_ARGS__});
+#define CDS_VECTOR_NEW(dtype, ...) cds_vector_create((struct cds_vector_config){.type = sizeof(dtype), .capacity = 8, .memory = cds_memory_system(cds_memory_system()), __VA_ARGS__});
 /**
  * Loop vector with iterators.
  *
@@ -58,10 +58,8 @@ struct cds_vector_config {
     size_t type;
     // initial capacity to reserve
     size_t capacity;
-    // copy allocator for elements
-    cds_callocator callocator;
-    // destroyer for elements
-    cds_destroyer destroyer;
+    // memory manager
+    struct cds_memory memory;
 };
 
 // Constructor/Descontructor
@@ -77,12 +75,11 @@ CDS_VECTOR(T) cds_vector_create(struct cds_vector_config config);
  * Create a new vector from an axisting vector.
  *
  * @param vector to be copied
- * @param callocator new copy allocator to new vector
- * @param destroyer new destroyer to new vector
+ * @param memory memory manager
  * @since 1.0
  * @return new vector or NULL if could not be created
  */
-CDS_VECTOR(T) cds_vector_copy(CDS_VECTOR(T) vector, cds_callocator callocator, cds_destroyer destroyer);
+CDS_VECTOR(T) cds_vector_copy(CDS_VECTOR(T) vector, struct cds_memory memory);
 /**
  * Create a new vector from another vector in a given range.
  * 
