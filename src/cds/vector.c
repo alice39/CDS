@@ -115,8 +115,10 @@ void cds_vector_destroy(CDS_VECTOR(T) vector) {
     }
 
     cds_vector_clear(vector);
-    free(vector->data);
-    free(vector);
+
+    cds_deallocator deallocator = vector->memory.deallocator;
+    deallocator(vector->data);
+    deallocator(vector);
 }
 
 int cds_vector_at(CDS_VECTOR(T) vector, size_t pos, void* out) {
@@ -189,7 +191,8 @@ int cds_vector_reserve(CDS_VECTOR(T) vector, size_t capacity) {
         return CDS_OK;
     }
 
-    uint8_t* new_data = realloc(vector->data, sizeof(uint8_t) * vector->type * capacity);
+    cds_reallocator reallocator = vector->memory.reallocator;
+    uint8_t* new_data = reallocator(vector->data, sizeof(uint8_t) * vector->type * capacity);
 
     if (new_data == NULL) {
         return CDS_ERR;
@@ -210,7 +213,8 @@ void cds_vector_shrink(CDS_VECTOR(T) vector) {
         return;
     }
 
-    uint8_t* new_data = realloc(vector->data, sizeof(uint8_t) * vector->type * vector->size);
+    cds_reallocator reallocator = vector->memory.reallocator;
+    uint8_t* new_data = reallocator(vector->data, sizeof(uint8_t) * vector->type * vector->size);
 
     if (new_data == NULL) {
         return;
@@ -350,8 +354,10 @@ static int _cds_shrink(CDS_VECTOR(T) vector) {
         return CDS_OK;
     }
 
+    cds_reallocator reallocator = vector->memory.reallocator;
+
     size_t new_reserved = vector->reserved / 2;
-    uint8_t* new_data = realloc(vector->data, sizeof(uint8_t) * vector->type * new_reserved);
+    uint8_t* new_data = reallocator(vector->data, sizeof(uint8_t) * vector->type * new_reserved);
 
     if (new_data == NULL) {
         return CDS_ERR;
