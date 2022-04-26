@@ -19,6 +19,13 @@
 #define CDS_VECTOR(type) cds_vector
 
 /**
+ * Create a new vector.
+ *
+ * @param dtype element type
+ * @since 1.0
+ */
+#define CDS_VECTOR_NEW(dtype) cds_vector_create((struct cds_vector_config){.type = sizeof(dtype), .capacity = 8});
+/**
  * Loop vector with iterators.
  *
  * @param vector to iterate in
