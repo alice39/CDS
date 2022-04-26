@@ -3,6 +3,7 @@
 #include <cds/iter.h>
 
 struct cds_iter_i {
+    struct cds_memory memory;
     void* structure;
     void* data;
 
@@ -16,17 +17,18 @@ struct cds_iter_i {
     size_t (*distance)(void* data, void* other);
 
     bool (*is_valid)(void* structure, void* data);
-    void (*destroy)(void* data);
+    void (*destroy)(void* structure, void* data);
 };
 
 CDS_ITER(T) cds_iter_create(void* structure, struct cds_iter_config config) {
-    if (structure == NULL) {
+    if (structure == NULL || !cds_memory_valid(config.memory)) {
         return NULL;
     }
 
-    CDS_ITER(T) iter = malloc(sizeof(struct cds_iter_i));
+    CDS_ITER(T) iter = config.memory.allocator(sizeof(struct cds_iter_i));
     
     if (iter != NULL) {
+        iter->memory = config.memory;
         iter->structure = structure;
         iter->data = config.initial_data;
 
@@ -60,10 +62,10 @@ void cds_iter_destroy(CDS_ITER(T) iter) {
     }
 
     if (iter->destroy != NULL) {
-        iter->destroy(iter->data);
+        iter->destroy(iter->structure, iter->data);
     }
 
-    free(iter);
+    iter->memory.deallocator(iter);
 }
 
 bool cds_iter_similar(CDS_ITER(T) first, CDS_ITER(T) second) {

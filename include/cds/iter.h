@@ -45,6 +45,7 @@ typedef struct cds_iter_i* cds_iter;
  * @since 1.0
  */
 struct cds_iter_config {
+    struct cds_memory memory;
     void* initial_data;
 
     bool (*has_next)(void* structure, void** data);
@@ -57,7 +58,7 @@ struct cds_iter_config {
     size_t (*distance)(void* data, void* other);
 
     bool (*is_valid)(void* structure, void* data);
-    void (*destroy)(void* data);
+    void (*destroy)(void* structure, void* data);
 };
 
 /**

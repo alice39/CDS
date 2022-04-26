@@ -30,7 +30,7 @@ static void* _cds_iter_back(void* structure, void** data);
 static bool _cds_iter_similar(void* data, void* other);
 static size_t _cds_iter_distance(void* data, void* other);
 static bool _cds_iter_valid(void* structure, void* data);
-static void _cds_iter_destroy(void* data);
+static void _cds_iter_destroy(void* structure, void* data);
 
 CDS_VECTOR(T) cds_vector_create(struct cds_vector_config config) {
     if (!cds_memory_valid(config.memory)) {
@@ -367,7 +367,8 @@ static int _cds_shrink(CDS_VECTOR(T) vector) {
 }
 
 static CDS_ITER(T) _cds_iter_create(CDS_VECTOR(T) vector, struct cds_vector_iterdata data, bool reverse) {
-    struct cds_vector_iterdata* iterdata = malloc(sizeof(struct cds_vector_iterdata));
+    struct cds_memory* memory = &vector->memory;
+    struct cds_vector_iterdata* iterdata = memory->allocator(sizeof(struct cds_vector_iterdata));
 
     if (iterdata == NULL) {
         return NULL;
@@ -377,6 +378,7 @@ static CDS_ITER(T) _cds_iter_create(CDS_VECTOR(T) vector, struct cds_vector_iter
     iterdata->mod = vector->mod;
 
     struct cds_iter_config config = {
+        .memory = *memory,
         .initial_data = iterdata,
         .has_next = reverse ? _cds_iter_hasback : _cds_iter_hasnext,
         .next = reverse ? _cds_iter_back : _cds_iter_next,
@@ -484,7 +486,12 @@ static bool _cds_iter_valid(void* structure, void* data) {
     return vector->mod == iterdata->mod;
 }
 
-static void _cds_iter_destroy(void* data) {
-    free(data);
+static void _cds_iter_destroy(void* structure, void* data) {
+    if (structure == NULL) {
+        return;
+    }
+
+    CDS_VECTOR(T) vector = structure;
+    vector->memory.deallocator(data);
 }
 
