@@ -22,9 +22,10 @@
  * Create a new vector.
  *
  * @param dtype element type
+ * @param ... optional parameters in struct cds_vector_config
  * @since 1.0
  */
-#define CDS_VECTOR_NEW(dtype) cds_vector_create((struct cds_vector_config){.type = sizeof(dtype), .capacity = 8});
+#define CDS_VECTOR_NEW(dtype, ...) cds_vector_create((struct cds_vector_config){.type = sizeof(dtype), .capacity = 8, __VA_ARGS__});
 /**
  * Loop vector with iterators.
  *
