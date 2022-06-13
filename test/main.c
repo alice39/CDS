@@ -22,19 +22,19 @@ int main() {
 
     /*
     //Create the new graph
-    graph *m_g = create_graph(5);
+    graph *m_g = cds_create_graph(5);
 
     // Adding edges
-    add_edge(m_g, 0, 1);
-    add_edge(m_g, 0, 2);
-    add_edge(m_g, 0, 3);
-    add_edge(m_g, 1, 2);
-    add_edge(m_g, 3, 1);
+    cds_add_edge(m_g, 0, 1);
+    cds_add_edge(m_g, 0, 2);
+    cds_add_edge(m_g, 0, 3);
+    cds_add_edge(m_g, 1, 2);
+    cds_add_edge(m_g, 3, 1);
 
 
-    print_graph(m_g);
+    cds_print_graph(m_g);
 
-    destroy_graph(m_g);
+    cds_destroy_graph(m_g);
 
     /* Output: 
         Graph:

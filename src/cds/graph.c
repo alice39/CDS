@@ -23,14 +23,14 @@ Define:
 
 
 
-struct graph {
+struct cds_graph {
     int nodes;
     bool **edges;
 };
 
 
 // Function to create a graph, with the number of nodes
-graph *create_graph(int nodes) {
+graph *cds_create_graph(int nodes) {
     // Assign the size memory for the graph
     graph *g = malloc(sizeof(*g));
 
@@ -54,7 +54,7 @@ graph *create_graph(int nodes) {
     for (int i=0; i < g->nodes; i++) {
         g->edges[i] = calloc(sizeof(bool), g->nodes);
         if (g->edges[i] == NULL){
-            destroy_graph(g);
+            cds_destroy_graph(g);
             return NULL;
         }
     }
@@ -63,7 +63,7 @@ graph *create_graph(int nodes) {
 }
 
 // Function to destroy a graph
-void destroy_graph(graph* g) {
+void cds_destroy_graph(graph* g) {
     // Check if the graph edges are NULL  
     if (g->edges == NULL) {
         return;
@@ -80,7 +80,7 @@ void destroy_graph(graph* g) {
 }
 
 // Function to display the graph in memory
-void print_graph(graph* g) {
+void cds_print_graph(graph* g) {
     printf("Graph:\n");
 
     // A for inside other to go through the matrix or array 2D 
@@ -94,14 +94,14 @@ void print_graph(graph* g) {
 }
 
 // Function to add a edge to a graph
-bool add_edge(graph *g, unsigned int from_node, unsigned int to_node) {
+bool cds_add_edge(graph *g, unsigned int from_node, unsigned int to_node) {
     // Check for possible bugs
     assert(g != NULL);
     assert(from_node < g->nodes);
     assert(to_node < g->nodes);
 
     // If the edge already exists, return false
-    if (has_edge(g, from_node, to_node)) {
+    if (cds_has_edge(g, from_node, to_node)) {
         return false;
     }
 
@@ -110,7 +110,7 @@ bool add_edge(graph *g, unsigned int from_node, unsigned int to_node) {
     return true;
 }
 
-bool has_edge(graph *g, unsigned int from_node, unsigned int to_node) {
+bool cds_has_edge(graph *g, unsigned int from_node, unsigned int to_node) {
     // Check for possible bugs
     assert(g != NULL);
     assert(from_node < g->nodes);
