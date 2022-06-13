@@ -64,7 +64,7 @@ cds_graph *cds_create_graph(int nodes) {
 // Function to destroy a graph
 void cds_destroy_graph(cds_graph* g) {
     // Check if the graph edges are NULL  
-    if (g->edges == NULL || g == NULL) {
+    if (g == NULL || g->edges == NULL) {
         return;
     }
 
