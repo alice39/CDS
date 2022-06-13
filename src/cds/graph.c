@@ -22,7 +22,6 @@ Define:
 #include <cds/graph.h>
 
 
-
 struct cds_graph {
     int nodes;
     bool **edges;
@@ -84,16 +83,17 @@ void cds_destroy_graph(cds_graph* g) {
 
 // Function to display the graph in memory
 void cds_print_graph(cds_graph* g) {
-    printf("Graph:\n");
+    printf("digraph {\n");
 
     // A for inside other to go through the matrix or array 2D 
     for (int from=0; from < g->nodes; from++) {
         for (int to=0; to < g->nodes; to++) {
             if (g->edges[from][to]) {
-                printf("%d -> %d\n", from, to);
+                printf("%d -> %d;\n", from, to);
             }
         }
     }
+    printf("}\n");
 }
 
 // Function to add a edge to a graph

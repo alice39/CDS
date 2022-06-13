@@ -7,7 +7,7 @@
 #include <cds/graph.h>
 
 int main() {
-    
+    /*
     CDS_VECTOR(int) vector = CDS_VECTOR_NEW(int);
 
     for (int i = 0; i < 4; i++) {
@@ -18,7 +18,7 @@ int main() {
         printf("ITER LOOP: %d\n", *i);
     });
     
-    cds_vector_destroy(vector);
+    cds_vector_destroy(vector);*/
 
     
     //Create the new graph
