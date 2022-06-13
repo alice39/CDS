@@ -20,9 +20,9 @@ int main() {
     
     cds_vector_destroy(vector);
 
-    /*
+    
     //Create the new graph
-    graph *m_g = cds_create_graph(5);
+    cds_graph *m_g = cds_create_graph(5);
 
     // Adding edges
     cds_add_edge(m_g, 0, 1);
